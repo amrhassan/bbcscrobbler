@@ -48,27 +48,28 @@ while True:
     
     try:
         new_track = station.get_recent_tracks(1)[0]
-    except Exception as e:
-        print ("Error: %s" %e)
-        continue
     
-    if new_track != playing_track:
+        if new_track != playing_track:
+            
+            if playing_track and not playing_track_scrobbled:
+                network.scrobble(playing_track.track.artist.name, playing_track.track.title, playing_track.timestamp)
+                playing_track_scrobbled = True
+                print("Scrobbled: %s" %playing_track.track)
+            
+            network.update_now_playing(new_track.track.artist.name, new_track.track.title, duration = str(int(new_track.track.get_duration()/1000)))
+            print("Now playing: %s" %new_track.track)
+            
+            playing_track = new_track
+            playing_track_scrobbled = False
         
-        if playing_track and not playing_track_scrobbled:
+        if playing_track and not playing_track_scrobbled and (time.time() - int(playing_track.timestamp)) >= int(playing_track.track.get_duration())/2000:
             network.scrobble(playing_track.track.artist.name, playing_track.track.title, playing_track.timestamp)
-            playing_track_scrobbled = True
             print("Scrobbled: %s" %playing_track.track)
-        
-        network.update_now_playing(new_track.track.artist.name, new_track.track.title, duration = str(int(new_track.track.get_duration()/1000)))
-        print("Now playing: %s" %new_track.track)
-        
-        playing_track = new_track
-        playing_track_scrobbled = False
-    
-    if playing_track and not playing_track_scrobbled and (time.time() - int(playing_track.timestamp)) >= int(playing_track.track.get_duration())/2000:
-        network.scrobble(playing_track.track.artist.name, playing_track.track.title, playing_track.timestamp)
-        print("Scrobbled: %s" %playing_track.track)
-        playing_track_scrobbled = True
+            playing_track_scrobbled = True
+            
+    except Exception as e:
+        print ("Error: %s" %repr(e))
+        continue
     
     time.sleep(10)
 

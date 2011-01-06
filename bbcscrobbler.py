@@ -24,14 +24,13 @@ if not os.path.exists(".session_key"):
     
     print("Please authorize the scrobbler to scrobble to your account: %s\n" %url)
     
-    authorized = False
-    while not authorized:
+    while True:
         try:
             session_key = skg.get_web_auth_session_key(url)
-            authorized = True
             fp = open(".session_key", "w")
             fp.write(session_key)
             fp.close()
+            break
         except pylast.WSError:
             time.sleep(1)
 else:

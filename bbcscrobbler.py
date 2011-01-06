@@ -73,6 +73,3 @@ while True:
     
     time.sleep(10)
 
-for item in station.get_recent_tracks():
-    print(item.track)
-    print(item.timestamp)

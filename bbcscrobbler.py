@@ -15,7 +15,7 @@ import pylast, os, time
 API_KEY = "8fe0d07b4879e9cd6f8d78d86a8f447c"
 API_SECRET = "debb11ad5da3be07d06fddd8fe95cc42"
 
-network = pylast.get_lastfm_network(API_KEY, API_SECRET)
+network = pylast.LastFMNetwork(API_KEY, API_SECRET)
 station = network.get_user(STATION)
 
 if not os.path.exists(".session_key"):
@@ -36,8 +36,7 @@ if not os.path.exists(".session_key"):
 else:
     session_key = open(".session_key").read()
 
-network = pylast.get_lastfm_network(API_KEY, API_SECRET, session_key)
-station = network.get_user(STATION)
+network.session_key = session_key
 
 print("Tuned in to %s\n----------------------" %STATION)
 
@@ -68,7 +67,6 @@ while True:
             
     except Exception as e:
         print ("Error: %s" %repr(e))
-        continue
     
     time.sleep(10)
 
